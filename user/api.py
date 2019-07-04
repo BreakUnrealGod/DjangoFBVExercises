@@ -4,7 +4,8 @@ from django.http import JsonResponse
 from common import utils, errors, config
 from libs.http import render_json
 from user import logic
-from user.models import User
+from user.forms import ProfileForm
+from user.models import User, Profile
 
 
 def verify_phone(request):
@@ -42,7 +43,34 @@ def login(request):
     #     user = User.objects.get(phonenum=phone)
     # except User.DoesNotExist:
     #     user = User.objects.create(phonenum=phone)
+    #     # 创建用户的同时，使用 user.id 创建 Profile 对象，建立一对一的关联
+    #     Profile.objects.create(id=user.id)
+
     user, created = User.objects.get_or_create(phonenum=phone_num)
     request.session['uid'] = user.id
 
     return render_json(data=user.to_dict())
+
+
+def get_profile(request):
+    profile = request.user.profile
+    return render_json(data=profile.to_dict(exclude=['vibration', 'only_matche', 'auto_play']))
+
+
+def set_profile(request):
+    user = request.user
+
+    form = ProfileForm(request.POST)
+    if form.is_valid():
+        profile = form.save(commit=False)
+        # 手动创建 一对一 关系
+        profile.id = user.id
+        profile.save()
+
+        return render_json()
+    else:
+        return render_json(data=form.errors)
+
+
+def upload_avatar(request):
+    pass
