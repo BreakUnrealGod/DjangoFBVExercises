@@ -2,7 +2,7 @@ from django.core.cache import cache
 from django.http import JsonResponse
 
 from common import utils, errors, config
-from lib.http import render_json
+from libs.http import render_json
 from user import logic
 from user.models import User
 
