@@ -60,13 +60,10 @@ def get_profile(request):
 def set_profile(request):
     user = request.user
 
-    form = ProfileForm(request.POST)
-    if form.is_valid():
-        profile = form.save(commit=False)
-        # 手动创建 一对一 关系
-        profile.id = user.id
-        profile.save()
+    form = ProfileForm(request.POST, instance=user.profile)
 
+    if form.is_valid():
+        form.save()
         return render_json()
     else:
         return render_json(data=form.errors)
