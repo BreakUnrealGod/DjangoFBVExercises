@@ -29,3 +29,12 @@ def recommend_users(user):
     ).exclude(id__in=swiped_sid_list)[:20]
 
     return users
+
+
+def like_someone(uid, sid):
+    if not User.objects.filter(id=sid).exists():
+        return False
+
+    Swiped.objects.create(uid=uid, sid=sid, mark='like')
+
+    return True

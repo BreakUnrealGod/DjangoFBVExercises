@@ -1,3 +1,4 @@
+from common import errors
 from libs.http import render_json
 from social import logic
 
@@ -16,7 +17,13 @@ def recommend(request):
 
 
 def like(request):
-    return None
+    sid = request.POST.get('sid')
+    user = request.user
+
+    if logic.like_someone(user.id, sid):
+        return render_json()
+    else:
+        return render_json(errors.LIKE_ERR)
 
 
 def dislike(request):
