@@ -1,3 +1,22 @@
-from django.shortcuts import render
+def recommend(request):
+    return None
 
-# Create your views here.
+
+def like(request):
+    return None
+
+
+def dislike(request):
+    return None
+
+
+def superlike(request):
+    return None
+
+
+def rewind(request):
+    return None
+
+
+def liked_me(request):
+    return None
