@@ -17,27 +17,43 @@ class User(models.Model):
     avatar	个人形象
     location	常居地
     """
+
+    LOCATIONS = (
+        ('bj', '北京'),
+        ('sz', '深圳'),
+        ('sh', '上海'),
+        ('gz', '广州'),
+        ('cd', '成都'),
+        ('dl', '大连'),
+    )
+
+    SEXS = (
+        (0, '全部'),
+        (1, '男'),
+        (2, '女')
+    )
+
     phonenum = models.CharField(max_length=11, unique=True)
     nickname = models.CharField(max_length=32)
-    sex = models.IntegerField(default=0)
-    birth_yaer = models.IntegerField(default=2000)
-    birth_mohth = models.IntegerField(default=1)
+    sex = models.IntegerField(default=0, choices=SEXS)
+    birth_year = models.IntegerField(default=2000)
+    birth_month = models.IntegerField(default=1)
     birth_day = models.IntegerField(default=1)
     avatar = models.CharField(max_length=256)
-    location = models.CharField(max_length=64)
+    location = models.CharField(max_length=64, choices=LOCATIONS)
 
     # @property
     @cached_property
     def age(self):
         today = datetime.date.today()
-        birthday = datetime.date(self.birth_yaer, self.birth_mohth, self.birth_day)
+        birthday = datetime.date(self.birth_year, self.birth_month, self.birth_day)
 
         return (today - birthday).days // 365
 
     @property
     def profile(self):
         """
-        usre.profile.location
+        user.profile.location
         :return:
         """
         if not hasattr(self, '_profile'):
@@ -84,6 +100,9 @@ class Profile(models.Model, ModelToDictMixin):
         ('bj', '北京'),
         ('sz', '深圳'),
         ('sh', '上海'),
+        ('gz', '广州'),
+        ('cd', '成都'),
+        ('dl', '大连'),
     )
 
     SEXS = (
@@ -93,10 +112,13 @@ class Profile(models.Model, ModelToDictMixin):
     )
 
     location = models.CharField(max_length=64, choices=LOCATIONS)
+
     min_distance = models.IntegerField(default=1)
     max_distance = models.IntegerField(default=10)
+
     min_dating_age = models.IntegerField(default=18)
     max_dating_age = models.IntegerField(default=81)
+
     dating_sex = models.IntegerField(default=0, choices=SEXS)
 
     vibration = models.BooleanField(default=True)
