@@ -13,5 +13,10 @@ class Swiped(models.Model):
     mark = models.CharField(max_length=16, choices=MARKS)
     created_at = models.DateTimeField(auto_now_add=True)
 
+    @classmethod
+    def is_liked(cls, sid, uid):
+        return cls.objects.filter(uid=sid, sid=uid,
+                                  mark__in=['like', 'superlike']).exists()
+
     class Meta:
         db_table = 'swiped'

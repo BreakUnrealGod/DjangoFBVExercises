@@ -32,9 +32,18 @@ def recommend_users(user):
 
 
 def like_someone(uid, sid):
+    """
+    创建喜欢的人，如果对方也喜欢，则建立好友关系
+    :param uid:
+    :param sid:
+    :return:
+    """
     if not User.objects.filter(id=sid).exists():
         return False
 
     Swiped.objects.create(uid=uid, sid=sid, mark='like')
+
+    if Swiped.is_liked(sid, uid):
+        print('+++ friend +++')
 
     return True
