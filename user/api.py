@@ -84,4 +84,7 @@ def upload_avatar(request):
         for chunk in avatar.chunks():
             output.write(chunk)
 
+    user.avatar = filename
+    user.save()
+
     return render_json()
