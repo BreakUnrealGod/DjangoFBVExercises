@@ -102,3 +102,19 @@ def rewind(user):
     now = datetime.datetime.now()
     timeout = 86400 - now.hour * 3600 - now.minute * 60 - now.second
     cache.set(key, rewind_times + 1, timeout=timeout)
+
+
+def liked_me(user):
+    """
+    喜欢我的人列表
+    :param user:
+    :return:
+    """
+    swipe_list = Swiped.objects.filter(sid=user.id,
+                                       mark__in=['like', 'superlike'])
+    # 过滤掉已经加为好友的用户
+    # TODO: 获得好友列表
+
+    liked_me_uid_list = [s.uid for s in swipe_list]
+
+    return liked_me_uid_list

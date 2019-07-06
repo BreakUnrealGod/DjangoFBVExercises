@@ -1,6 +1,7 @@
 from libs.http import render_json
 from social import logic
 from social.models import Swiped
+from user.models import User
 
 
 def recommend(request):
@@ -72,7 +73,18 @@ def rewind(request):
 
 
 def liked_me(request):
-    return None
+    """
+    喜欢我的人列表
+    :param request:
+    :return:
+    """
+    liked_me_uid_list = logic.liked_me(request.user)
+
+    users = User.objects.filter(id__in=liked_me_uid_list)
+
+    user_list = [u.to_dict() for u in users]
+
+    return render_json(data=user_list)
 
 
 def friends(request):
