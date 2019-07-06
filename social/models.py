@@ -96,5 +96,16 @@ class Friend(models.Model):
 
         cls.objects.create(uid1=uid1, uid2=uid2)
 
+    @classmethod
+    def cancel_friends(cls, uid1, uid2):
+        """
+
+        :param uid1:
+        :param uid2:
+        :return:
+        """
+        uid1, uid2 = (uid1, uid2) if uid1 <= uid2 else (uid2, uid1)
+        cls.objects.filter(uid1=uid1, uid2=uid2).delete()
+
     class Meta:
         db_table = 'friends'
