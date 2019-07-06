@@ -26,9 +26,9 @@ def verify_phone(request):
         if logic.send_verify_code(phone_num):
             return render_json()
         else:
-            return render_json(code=errors.SMS_SEND_ERR)
+            return render_json(code=errors.SmsSendError.code)
 
-    return render_json(code=errors.PHONE_NUM_ERR)
+    return render_json(code=errors.PhoneNumError.code)
 
 
 def login(request):
@@ -41,7 +41,7 @@ def login(request):
     # 1、检查 验证码
     cached_code = cache.get(config.VERIFY_CODE_CACHE_PREFIX % phone_num)
     if cached_code != code:
-        return render_json(code=errors.VERIFY_CODE_ERR)
+        return render_json(code=errors.VerifyCodeError.code)
 
     # 2、登录或注册
     # try:
@@ -90,4 +90,4 @@ def upload_avatar(request):
     if ret:
         return render_json()
     else:
-        return render_json(code=errors.AVATAR_UPLOAD_ERR)
+        return render_json(code=errors.AvatarUploadError.code)
