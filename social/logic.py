@@ -110,10 +110,12 @@ def liked_me(user):
     :param user:
     :return:
     """
-    swipe_list = Swiped.objects.filter(sid=user.id,
-                                       mark__in=['like', 'superlike'])
     # 过滤掉已经加为好友的用户
-    # TODO: 获得好友列表
+    friend_uid_list = Friend.friend_list(user.id)
+
+    swipe_list = Swiped.objects. \
+        filter(sid=user.id, mark__in=['like', 'superlike']). \
+        exclude(uid__in=friend_uid_list)
 
     liked_me_uid_list = [s.uid for s in swipe_list]
 

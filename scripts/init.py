@@ -78,7 +78,7 @@ def init_permission():
         ('rewind',        '反悔功能'),
         ('anylocation',   '任意更改定位'),
         ('unlimit_like',  '无限喜欢次数'),
-        ('show_liked_me', '查看喜欢过我的人'),
+        ('liked_me', '查看喜欢过我的人'),
     )
 
     for name, desc in permissions:
@@ -90,7 +90,7 @@ def init_permission():
 def init_vip():
     for i in range(4):
         vip, _ = Vip.objects.get_or_create(
-            name='%d级会员' % i,
+            name='%d 级会员' % i,
             level=i,
             price=i * 5.0
         )

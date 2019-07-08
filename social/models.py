@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import Q
 
 from common import errors
 from common.errors import LogicException
@@ -44,7 +45,6 @@ class Swiped(models.Model):
             cls.objects.create(uid=uid, sid=sid, mark=mark)
             return True
 
-
     class Meta:
         db_table = 'swiped'
 
@@ -53,6 +53,7 @@ class FriendManager(models.Manager):
     """
     自定义 Manager，扩充 models.Manager 的默认行为，增加和业务相关的方法
     """
+
     def make_friends(self, uid1, uid2):
         uid1, uid2 = (uid1, uid2) if uid1 <= uid2 else (uid2, uid1)
         # self.create(uid1=uid1, uid2=uid2)
@@ -106,6 +107,17 @@ class Friend(models.Model):
         """
         uid1, uid2 = (uid1, uid2) if uid1 <= uid2 else (uid2, uid1)
         cls.objects.filter(uid1=uid1, uid2=uid2).delete()
+
+    @classmethod
+    def friend_list(cls, uid):
+        friends = cls.objects.filter(Q(uid1=uid) | Q(uid2=uid))
+        friend_id_list = []
+
+        for f in friends:
+            fid = f.uid2 if uid == f.uid1 else f.uid1
+            friend_id_list.append(fid)
+
+        return friend_id_list
 
     class Meta:
         db_table = 'friends'

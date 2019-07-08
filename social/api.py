@@ -1,6 +1,6 @@
 from libs.http import render_json
 from social import logic
-from social.models import Swiped
+from social.models import Swiped, Friend
 from user.models import User
 
 
@@ -88,4 +88,14 @@ def liked_me(request):
 
 
 def friends(request):
-    return None
+    """
+    好友列表
+    :param request:
+    :return:
+    """
+    friend_id_list = Friend.friend_list(request.user.id)
+
+    my_friends = User.objects.filter(id__in=friend_id_list)
+    friend_list = [u.to_dict() for u in my_friends]
+
+    return render_json(data=friend_list)
