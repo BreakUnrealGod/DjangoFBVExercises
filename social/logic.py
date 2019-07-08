@@ -68,7 +68,7 @@ def superlike_someone(uid, sid):
         raise errors.SidError
 
     # 创建滑动记录
-    ret = Swiped.swipe(uid=uid, sid=sid, mark='supderlike')
+    ret = Swiped.swipe(uid=uid, sid=sid, mark='superlike')
 
     # 只有滑动成功，才可以进行好友匹配操作
     # 如果被滑动人喜欢过我，则建立好友关系

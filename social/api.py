@@ -1,6 +1,7 @@
 from libs.http import render_json
 from social import logic
 from social.models import Swiped, Friend
+from social.permissions import has_perm
 from user.models import User
 
 
@@ -31,6 +32,7 @@ def like(request):
     return render_json(data={'matched': matched})
 
 
+@has_perm('superlike')
 def superlike(request):
     """
     超级喜欢
@@ -59,6 +61,7 @@ def dislike(request):
     return render_json()
 
 
+@has_perm('rewind')
 def rewind(request):
     """
     反悔
@@ -72,6 +75,7 @@ def rewind(request):
     return render_json()
 
 
+@has_perm('liked_me')
 def liked_me(request):
     """
     喜欢我的人列表
