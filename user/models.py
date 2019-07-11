@@ -3,7 +3,6 @@ import datetime
 from django.db import models
 from django.utils.functional import cached_property
 
-from libs.orm import ModelToDictMixin
 from vip.models import Vip
 
 
@@ -60,10 +59,10 @@ class User(models.Model):
         :return:
         """
         if not hasattr(self, '_profile'):
-            self._profile, _ = Profile.objects.get_or_create(id=self.id)
+            self._profile, _ = Profile.get_or_create(id=self.id)
 
             # try:
-            #     self._profile = Profile.objects.get(id=self.id)
+            #     self._profile = Profile.get(id=self.id)
             # except Profile.DoesNotExist:
             #     self._profile = Profile.objects.create(id=self.id)
 
@@ -76,7 +75,7 @@ class User(models.Model):
         :return:
         """
         if not hasattr(self, '_vip'):
-            self._vip = Vip.objects.get(id=self.vip_id)
+            self._vip = Vip.get(id=self.vip_id)
 
         return self._vip
 
@@ -95,7 +94,7 @@ class User(models.Model):
         db_table = 'users'
 
 
-class Profile(models.Model, ModelToDictMixin):
+class Profile(models.Model):
     """
     | location       | 目标城市                 |
     | min_distance   | 最小查找范围             |

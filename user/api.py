@@ -1,3 +1,4 @@
+import logging
 import os
 import time
 from urllib.parse import urljoin
@@ -11,6 +12,8 @@ from libs.http import render_json
 from user import logic
 from user.forms import ProfileForm
 from user.models import User, Profile
+
+logger = logging.getLogger('inf')
 
 
 def verify_phone(request):
@@ -45,21 +48,40 @@ def login(request):
 
     # 2、登录或注册
     # try:
-    #     user = User.objects.get(phonenum=phone)
+    #     user = User.get(phonenum=phone)
     # except User.DoesNotExist:
     #     user = User.objects.create(phonenum=phone)
     #     # 创建用户的同时，使用 user.id 创建 Profile 对象，建立一对一的关联
     #     Profile.objects.create(id=user.id)
 
-    user, created = User.objects.get_or_create(phonenum=phone_num)
+    user, created = User.get_or_create(phonenum=phone_num)
     request.session['uid'] = user.id
+
+    logger.info('user.login, uid:%s' % user.id)
 
     return render_json(data=user.to_dict())
 
 
 def get_profile(request):
-    profile = request.user.profile
-    return render_json(data=profile.to_dict(exclude=['vibration', 'only_matche', 'auto_play']))
+    user = request.user
+
+    # 1、先从缓存中获取 profile_data
+    key = config.PROFILE_DATA_CACHE_PREFIX % user.id
+    profile_data = cache.get(key)
+    logger.debug('get from cache')
+    print('get from cache')
+
+    # 2、如果缓存中没有，则从数据库获取
+    if profile_data is None:
+        profile = user.profile
+        profile_data = profile.to_dict(exclude=['vibration', 'only_matche', 'auto_play'])
+        logger.debug('get from DB')
+
+        # 3、将 profile_data 存储至缓存
+        cache.set(key, profile_data)
+        logger.debug('set cache')
+
+    return render_json(data=profile_data)
 
 
 def set_profile(request):
@@ -68,7 +90,14 @@ def set_profile(request):
     form = ProfileForm(request.POST, instance=user.profile)
 
     if form.is_valid():
-        form.save()
+        profile = form.save()
+
+        # 保存成功后，直接更新缓存
+        # 也可以通过直接删除缓存的方式更新缓存内容
+        key = config.PROFILE_DATA_CACHE_PREFIX % user.id
+        profile_data = profile.to_dict(exclude=['vibration', 'only_matche', 'auto_play'])
+        cache.set(key, profile_data)
+
         return render_json()
     else:
         return render_json(data=form.errors)
@@ -84,7 +113,7 @@ def upload_avatar(request):
     # with open(filepath, 'wb+') as output:
     #     for chunk in avatar.chunks():
     #         output.write(chunk)
-    
+
     ret = logic.async_upload_avatar(user, avatar)
 
     if ret:

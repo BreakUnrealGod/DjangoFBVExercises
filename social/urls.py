@@ -10,4 +10,5 @@ urlpatterns = [
     path('rewind', api.rewind),
     path('liked_me', api.liked_me),
     path('friends', api.friends),
+    path('top10', api.top10),
 ]

@@ -56,7 +56,11 @@ def dislike(request):
     sid = int(request.POST.get('sid'))
     user = request.user
 
-    Swiped.swipe(uid=user.id, sid=sid, mark='dislike')
+    ret = Swiped.swipe(uid=user.id, sid=sid, mark='dislike')
+
+    # 只有滑动成功后，才可以进行增加积分操作
+    if ret:
+        logic.add_swipe_score('dislike', sid)
 
     return render_json()
 
@@ -103,3 +107,21 @@ def friends(request):
     friend_list = [u.to_dict() for u in my_friends]
 
     return render_json(data=friend_list)
+  
+
+def top10(request):
+    """
+    获取人气排行榜
+    :param request:
+    :return:
+    """
+    ret_data = logic.get_top_rank(10)
+
+    rank_data = []
+
+    for user, score in ret_data:
+        user_dict = user.to_dict()
+        user_dict['score'] = score
+        rank_data.append(user_dict)
+
+    return render_json(data=rank_data)

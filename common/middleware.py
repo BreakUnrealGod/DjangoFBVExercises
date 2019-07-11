@@ -1,3 +1,6 @@
+import logging
+import traceback
+
 from django.utils.deprecation import MiddlewareMixin
 
 from common import errors
@@ -22,12 +25,15 @@ class AuthMiddleware(MiddlewareMixin):
             return render_json(code=errors.LOGIN_REQUIRED)
 
         # try:
-        #     request.user = User.objects.get(id=uid)
+        #     request.user = User.get(id=uid)
         # except User.DoesNotExist:
         #     # 设置为 None 后，在后续操作中依然无法使用，抛出异常
         #     request.user = None
 
-        request.user = User.objects.get(id=uid)
+        request.user = User.get(id=uid)
+
+
+err_logger = logging.getLogger('err')
 
 
 class LogicExceptionMiddleware(MiddlewareMixin):
@@ -35,3 +41,7 @@ class LogicExceptionMiddleware(MiddlewareMixin):
     def process_exception(self, request, exception):
         if isinstance(exception, (LogicException, LogicError)):
             return render_json(code=exception.code)
+        else:
+            error_info = traceback.format_exc()
+            err_logger.error(error_info)
+            return render_json(code=-1)
